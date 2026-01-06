@@ -26,7 +26,7 @@ public class XbondTradeTransformer implements DataTransformer<Object> {
 
         String businessDateStr = record.get("business_date");
         String securityId = record.get("bond_key");
-        Date businessDate = new Date(DateUtils.parseDate(businessDateStr, "yyyyMMdd").getTime());
+        java.sql.Date businessDate = new java.sql.Date(DateUtils.parseDate(businessDateStr, "yyyyMMdd").getTime());
 
         XbondTradeRecord result = new XbondTradeRecord(businessDate, securityId);
 
@@ -57,13 +57,13 @@ public class XbondTradeTransformer implements DataTransformer<Object> {
         result.setLastTradeSide(lastTradeSide);
 
         String dealTimeStr = record.get("deal_time");
-        Timestamp eventTime = new Timestamp(DateUtils.parseTimestamp(dealTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
+        java.sql.Timestamp eventTime = new java.sql.Timestamp(DateUtils.parseTimestamp(dealTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
         result.setEventTime(eventTime);
 
         String recvTimeStr = record.get("recv_time");
         Timestamp receiveTime;
         if (recvTimeStr != null && !recvTimeStr.isEmpty()) {
-            receiveTime = new Timestamp(DateUtils.parseTimestamp(recvTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
+            receiveTime = new java.sql.Timestamp(DateUtils.parseTimestamp(recvTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
         } else {
             receiveTime = eventTime;
             logger.warn("recv_time is null for trade {}, falling back to event_time", securityId);

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.histdata.etl.transformer.XbondQuoteTransformerTest" time="0.728" tests="5" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="sun.desktop" value="windows"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="GBK"/>
+    <property name="java.class.path" value="C:\Users\sl401\workspace\hist-data-etl-tool\hist-data-etl-tool\target\test-classes;C:\Users\sl401\workspace\hist-data-etl-tool\hist-data-etl-tool\target\classes;C:\Users\sl401\.m2\repository\com\qcloud\cos_api\5.6.3\cos_api-5.6.3.jar;C:\Users\sl401\.m2\repository\org\apache\httpcomponents\httpclient\4.5.3\httpclient-4.5.3.jar;C:\Users\sl401\.m2\repository\org\apache\httpcomponents\httpcore\4.4.6\httpcore-4.4.6.jar;C:\Users\sl401\.m2\repository\commons-codec\commons-codec\1.10\commons-codec-1.10.jar;C:\Users\sl401\.m2\repository\joda-time\joda-time\2.9.9\joda-time-2.9.9.jar;C:\Users\sl401\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.9.9.2\jackson-databind-2.9.9.2.jar;C:\Users\sl401\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.9.9\jackson-core-2.9.9.jar;C:\Users\sl401\.m2\repository\org\bouncycastle\bcprov-jdk15on\1.59\bcprov-jdk15on-1.59.jar;C:\Users\sl401\.m2\repository\com\dolphindb\dolphindb-javaapi\3.00.0.2\dolphindb-javaapi-3.00.0.2.jar;C:\Users\sl401\.m2\repository\org\lz4\lz4-java\1.7.1\lz4-java-1.7.1.jar;C:\Users\sl401\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.15.2\jackson-annotations-2.15.2.jar;C:\Users\sl401\.m2\repository\org\javatuples\javatuples\1.2\javatuples-1.2.jar;C:\Users\sl401\.m2\repository\org\slf4j\slf4j-simple\2.0.7\slf4j-simple-2.0.7.jar;C:\Users\sl401\.m2\repository\com\mysql\mysql-connector-j\8.0.33\mysql-connector-j-8.0.33.jar;C:\Users\sl401\.m2\repository\com\google\protobuf\protobuf-java\3.21.9\protobuf-java-3.21.9.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-csv\1.10.0\commons-csv-1.10.0.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-configuration2\2.9.0\commons-configuration2-2.9.0.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-lang3\3.12.0\commons-lang3-3.12.0.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-text\1.10.0\commons-text-1.10.0.jar;C:\Users\sl401\.m2\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;C:\Users\sl401\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\sl401\.m2\repository\ch\qos\logback\logback-classic\1.2.12\logback-classic-1.2.12.jar;C:\Users\sl401\.m2\repository\ch\qos\logback\logback-core\1.2.12\logback-core-1.2.12.jar;C:\Users\sl401\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\sl401\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\sl401\.m2\repository\org\mockito\mockito-inline\4.11.0\mockito-inline-4.11.0.jar;C:\Users\sl401\.m2\repository\org\mockito\mockito-core\4.11.0\mockito-core-4.11.0.jar;C:\Users\sl401\.m2\repository\net\bytebuddy\byte-buddy\1.12.19\byte-buddy-1.12.19.jar;C:\Users\sl401\.m2\repository\net\bytebuddy\byte-buddy-agent\1.12.19\byte-buddy-agent-1.12.19.jar;C:\Users\sl401\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="user.timezone" value="GMT+08:00"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="C:\Java\jdk1.8.0_341\jre\bin"/>
+    <property name="sun.java.command" value="C:\Users\sl401\AppData\Local\Temp\surefire7948807308749748931\surefirebooter-20260107023728824_3.jar C:\Users\sl401\AppData\Local\Temp\surefire7948807308749748931 2026-01-07T02-37-28_469-jvmRun1 surefire-20260107023728824_1tmp surefire_0-20260107023728824_2tmp"/>
+    <property name="surefire.test.class.path" value="C:\Users\sl401\workspace\hist-data-etl-tool\hist-data-etl-tool\target\test-classes;C:\Users\sl401\workspace\hist-data-etl-tool\hist-data-etl-tool\target\classes;C:\Users\sl401\.m2\repository\com\qcloud\cos_api\5.6.3\cos_api-5.6.3.jar;C:\Users\sl401\.m2\repository\org\apache\httpcomponents\httpclient\4.5.3\httpclient-4.5.3.jar;C:\Users\sl401\.m2\repository\org\apache\httpcomponents\httpcore\4.4.6\httpcore-4.4.6.jar;C:\Users\sl401\.m2\repository\commons-codec\commons-codec\1.10\commons-codec-1.10.jar;C:\Users\sl401\.m2\repository\joda-time\joda-time\2.9.9\joda-time-2.9.9.jar;C:\Users\sl401\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.9.9.2\jackson-databind-2.9.9.2.jar;C:\Users\sl401\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.9.9\jackson-core-2.9.9.jar;C:\Users\sl401\.m2\repository\org\bouncycastle\bcprov-jdk15on\1.59\bcprov-jdk15on-1.59.jar;C:\Users\sl401\.m2\repository\com\dolphindb\dolphindb-javaapi\3.00.0.2\dolphindb-javaapi-3.00.0.2.jar;C:\Users\sl401\.m2\repository\org\lz4\lz4-java\1.7.1\lz4-java-1.7.1.jar;C:\Users\sl401\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.15.2\jackson-annotations-2.15.2.jar;C:\Users\sl401\.m2\repository\org\javatuples\javatuples\1.2\javatuples-1.2.jar;C:\Users\sl401\.m2\repository\org\slf4j\slf4j-simple\2.0.7\slf4j-simple-2.0.7.jar;C:\Users\sl401\.m2\repository\com\mysql\mysql-connector-j\8.0.33\mysql-connector-j-8.0.33.jar;C:\Users\sl401\.m2\repository\com\google\protobuf\protobuf-java\3.21.9\protobuf-java-3.21.9.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-csv\1.10.0\commons-csv-1.10.0.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-configuration2\2.9.0\commons-configuration2-2.9.0.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-lang3\3.12.0\commons-lang3-3.12.0.jar;C:\Users\sl401\.m2\repository\org\apache\commons\commons-text\1.10.0\commons-text-1.10.0.jar;C:\Users\sl401\.m2\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;C:\Users\sl401\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\sl401\.m2\repository\ch\qos\logback\logback-classic\1.2.12\logback-classic-1.2.12.jar;C:\Users\sl401\.m2\repository\ch\qos\logback\logback-core\1.2.12\logback-core-1.2.12.jar;C:\Users\sl401\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\sl401\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\sl401\.m2\repository\org\mockito\mockito-inline\4.11.0\mockito-inline-4.11.0.jar;C:\Users\sl401\.m2\repository\org\mockito\mockito-core\4.11.0\mockito-core-4.11.0.jar;C:\Users\sl401\.m2\repository\net\bytebuddy\byte-buddy\1.12.19\byte-buddy-1.12.19.jar;C:\Users\sl401\.m2\repository\net\bytebuddy\byte-buddy-agent\1.12.19\byte-buddy-agent-1.12.19.jar;C:\Users\sl401\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\sl401"/>
+    <property name="user.language" value="zh"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.home" value="C:\Java\jdk1.8.0_341\jre"/>
+    <property name="basedir" value="C:\Users\sl401\workspace\hist-data-etl-tool\hist-data-etl-tool"/>
+    <property name="file.separator" value="\"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="surefire.real.class.path" value="C:\Users\sl401\AppData\Local\Temp\surefire7948807308749748931\surefirebooter-20260107023728824_3.jar"/>
+    <property name="sun.boot.class.path" value="C:\Java\jdk1.8.0_341\jre\lib\resources.jar;C:\Java\jdk1.8.0_341\jre\lib\rt.jar;C:\Java\jdk1.8.0_341\jre\lib\jsse.jar;C:\Java\jdk1.8.0_341\jre\lib\jce.jar;C:\Java\jdk1.8.0_341\jre\lib\charsets.jar;C:\Java\jdk1.8.0_341\jre\lib\jfr.jar;C:\Java\jdk1.8.0_341\jre\classes"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="1.8.0_341-b10"/>
+    <property name="user.name" value="sl401"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.endorsed.dirs" value="C:\Java\jdk1.8.0_341\jre\lib\endorsed"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="GBK"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\sl401\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\sl401\AppData\Local\Temp\"/>
+    <property name="java.version" value="1.8.0_341"/>
+    <property name="user.dir" value="C:\Users\sl401\workspace\hist-data-etl-tool\hist-data-etl-tool"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="java.library.path" value="C:\Java\jdk1.8.0_341\jre\bin;C:\windows\Sun\Java\bin;C:\windows\system32;C:\windows;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\libnvvp;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;C:\Program Files\HP\OMEN-Broadcast\Common;C:\Java\jdk1.8.0_341\bin;C:\Users\sl401\dev\apache-maven-3.9.11\bin;C:\Program Files\Git\cmd;C:\Program Files\Go\bin;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.1.0\;C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\Program Files (x86)\GnuWin32\bin;C:\Users\sl401\dev\gradle-7.6.2\bin;C:\Users\sl401\anaconda3\condabin;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\nodejs\;C:\Users\sl401\AppData\Local\Microsoft\WindowsApps;;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2024.3.5\bin;;C:\Users\sl401\AppData\Local\Programs\Ollama;C:\Users\sl401\go\bin;C:\Users\sl401\.dotnet\tools;C:\Users\sl401\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\sl401\AppData\Roaming\npm;C:\Users\sl401\AppData\Local\Programs\CodeBuddy CN\bin;."/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="25.341-b10"/>
+    <property name="java.ext.dirs" value="C:\Java\jdk1.8.0_341\jre\lib\ext;C:\windows\Sun\Java\lib\ext"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="52.0"/>
+  </properties>
+  <testcase name="testNullReceiveTime" classname="com.histdata.etl.transformer.XbondQuoteTransformerTest" time="0.2">
+    <system-out><![CDATA[2026-01-07 02:37:30.402 [main] WARN  c.h.e.t.XbondQuoteTransformer - receive_time is null for security 210210.IB, skipping record
+]]></system-out>
+  </testcase>
+  <testcase name="testSuccessfulTransformation" classname="com.histdata.etl.transformer.XbondQuoteTransformerTest" time="0.007"/>
+  <testcase name="testSettleSpeedMapping" classname="com.histdata.etl.transformer.XbondQuoteTransformerTest" time="0.006"/>
+  <testcase name="testInvalidInput" classname="com.histdata.etl.transformer.XbondQuoteTransformerTest" time="0.0"/>
+  <testcase name="testEmptyMap" classname="com.histdata.etl.transformer.XbondQuoteTransformerTest" time="0.0"/>
+</testsuite>

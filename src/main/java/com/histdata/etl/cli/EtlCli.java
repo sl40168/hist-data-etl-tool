@@ -62,7 +62,11 @@ public class EtlCli {
     }
 
     public void run(String[] args) throws Exception {
-        if (args.length == 0 || "--help".equals(args[0])) {
+        if (args.length == 0) {
+            throw new IllegalArgumentException("Usage: java -jar etl-tool.jar <START_DATE> <END_DATE> [CONFIG_FILE]");
+        }
+        
+        if ("--help".equals(args[0])) {
             printHelp();
             return;
         }
@@ -80,8 +84,20 @@ public class EtlCli {
         String endDateStr = args[1];
         String configPath = args.length > 2 ? args[2] : null;
 
-        LocalDate startDate = LocalDate.parse(startDateStr, DateTimeFormatter.BASIC_ISO_DATE);
-        LocalDate endDate = LocalDate.parse(endDateStr, DateTimeFormatter.BASIC_ISO_DATE);
+        LocalDate startDate;
+        LocalDate endDate;
+        
+        try {
+            startDate = LocalDate.parse(startDateStr, DateTimeFormatter.BASIC_ISO_DATE);
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid start date format: " + startDateStr + ". Expected YYYYMMDD format.");
+        }
+        
+        try {
+            endDate = LocalDate.parse(endDateStr, DateTimeFormatter.BASIC_ISO_DATE);
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid end date format: " + endDateStr + ". Expected YYYYMMDD format.");
+        }
 
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("Start date must not be after end date");

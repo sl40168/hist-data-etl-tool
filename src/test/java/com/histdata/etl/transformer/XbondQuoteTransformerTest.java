@@ -4,6 +4,8 @@ import com.histdata.etl.model.XbondQuoteRecord;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for XbondQuoteTransformer.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class XbondQuoteTransformerTest {
     private XbondQuoteTransformer transformer;
 
@@ -52,7 +55,7 @@ public class XbondQuoteTransformerTest {
         when(record.get("business_date")).thenReturn("20250101");
         when(record.get("underlying_security_id")).thenReturn("210210");
         when(record.get("underlying_settlement_type")).thenReturn("1");
-        when(record.get("transact_time")).thenReturn("20250101-09:30:00.000");
+        when(record.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record.get("recv_time")).thenReturn("");
         records.add(record);
         
@@ -71,8 +74,8 @@ public class XbondQuoteTransformerTest {
         when(record1.get("business_date")).thenReturn("20250101");
         when(record1.get("underlying_security_id")).thenReturn("210210");
         when(record1.get("underlying_settlement_type")).thenReturn("1");
-        when(record1.get("transact_time")).thenReturn("20250101-09:30:00.000");
-        when(record1.get("recv_time")).thenReturn("20250101-09:30:00.000");
+        when(record1.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
+        when(record1.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record1.get("underlying_md_entry_type")).thenReturn("0");
         when(record1.get("underlying_md_price_level")).thenReturn("1");
         when(record1.get("underlying_md_entry_px")).thenReturn("100.0");
@@ -104,13 +107,16 @@ public class XbondQuoteTransformerTest {
         when(record1.get("business_date")).thenReturn("20250101");
         when(record1.get("underlying_security_id")).thenReturn("210210");
         when(record1.get("underlying_settlement_type")).thenReturn("1");
-        when(record1.get("transact_time")).thenReturn("20250101-09:30:00.000");
-        when(record1.get("recv_time")).thenReturn("20250101-09:30:00.000");
+        when(record1.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
+        when(record1.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record1.get("underlying_md_entry_type")).thenReturn("0");
         when(record1.get("underlying_md_price_level")).thenReturn("1");
         when(record1.get("underlying_md_entry_px")).thenReturn("100.0");
         when(record1.get("underlying_md_entry_size")).thenReturn("1000");
-        when(record1.isSet(anyString())).thenReturn(false);
+        when(record1.isSet("underlying_md_yield")).thenReturn(true);
+        when(record1.get("underlying_md_yield")).thenReturn("3.5");
+        when(record1.isSet("underlying_md_yield_type")).thenReturn(true);
+        when(record1.get("underlying_md_yield_type")).thenReturn("MATURITY");
         records1.add(record1);
         
         groupedRecords1.put("key", records1);
@@ -125,13 +131,16 @@ public class XbondQuoteTransformerTest {
         when(record2.get("business_date")).thenReturn("20250101");
         when(record2.get("underlying_security_id")).thenReturn("210210");
         when(record2.get("underlying_settlement_type")).thenReturn("2");
-        when(record2.get("transact_time")).thenReturn("20250101-09:30:00.000");
-        when(record2.get("recv_time")).thenReturn("20250101-09:30:00.000");
+        when(record2.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
+        when(record2.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record2.get("underlying_md_entry_type")).thenReturn("0");
         when(record2.get("underlying_md_price_level")).thenReturn("1");
         when(record2.get("underlying_md_entry_px")).thenReturn("100.0");
         when(record2.get("underlying_md_entry_size")).thenReturn("1000");
-        when(record2.isSet(anyString())).thenReturn(false);
+        when(record2.isSet("underlying_md_yield")).thenReturn(true);
+        when(record2.get("underlying_md_yield")).thenReturn("3.5");
+        when(record2.isSet("underlying_md_yield_type")).thenReturn(true);
+        when(record2.get("underlying_md_yield_type")).thenReturn("MATURITY");
         records2.add(record2);
         
         groupedRecords2.put("key", records2);

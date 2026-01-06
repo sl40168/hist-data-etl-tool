@@ -27,7 +27,7 @@ public class FutureQuoteTransformer implements DataTransformer<Object> {
 
         String businessDateStr = (String) record.get("business_date");
         String code = (String) record.get("code");
-        Date businessDate = new Date(DateUtils.parseDate(businessDateStr, "yyyyMMdd").getTime());
+        java.sql.Date businessDate = new java.sql.Date(DateUtils.parseDate(businessDateStr, "yyyyMMdd").getTime());
 
         String exchProductId = code + ".CFFEX";
         FutureQuoteRecord result = new FutureQuoteRecord(businessDate, exchProductId);
@@ -77,13 +77,13 @@ public class FutureQuoteTransformer implements DataTransformer<Object> {
                 actionTimeStr.substring(2, 4) + ":" + 
                 actionTimeStr.substring(4, 6) + "." + 
                 actionTimeStr.substring(6);
-        Timestamp eventTime = new Timestamp(DateUtils.parseTimestamp(eventTimeStr, "yyyyMMdd-HH:mm:ss.SSS").getTime());
+        java.sql.Timestamp eventTime = new java.sql.Timestamp(DateUtils.parseTimestamp(eventTimeStr, "yyyyMMdd-HH:mm:ss.SSS").getTime());
         result.setEventTime(eventTime);
 
         String receiveTimeStr = (String) record.get("receive_time");
         Timestamp receiveTime;
         if (receiveTimeStr != null && !receiveTimeStr.isEmpty()) {
-            receiveTime = new Timestamp(DateUtils.parseTimestamp(receiveTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
+            receiveTime = new java.sql.Timestamp(DateUtils.parseTimestamp(receiveTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
         } else {
             receiveTime = eventTime;
             logger.warn("receive_time is null for future {}, falling back to event_time", code);

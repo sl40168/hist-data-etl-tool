@@ -4,6 +4,8 @@ import com.histdata.etl.model.XbondTradeRecord;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -11,6 +13,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for XbondTradeTransformer.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class XbondTradeTransformerTest {
     private XbondTradeTransformer transformer;
 
