@@ -860,3 +860,7 @@ The meaning of each field is as below:
 - create_time_trade & create_time_quote: The timestamp when this quote is created. Generate it on your local in programe.
 
 - create_time: Keep it null in this source.
+
+3. The logic to transform the data:
+
+There is no complex logic to transform the data, just copy the data from source to target. **ONLY** need to pay attention to the 'bid_prices', 'ask_prices', 'bid_qty' and 'ask_qty'.
