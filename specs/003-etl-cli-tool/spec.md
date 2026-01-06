@@ -9,11 +9,13 @@
 
 ### Session 2026-01-06
 
-- Q: What should happen when multiple instances of the ETL tool attempt to run simultaneously? → A: Prevent concurrent executions (enforce single instance via file lock/PID check with clear error)
-- Q: What is the typical daily data volume for performance and memory targets? → A: Approximate ranges per data source: XBond Market Quote: 1-10M records, XBond Trade: 100K-1M records, Bond Future L2 Quote: 10-50M records
-- Q: How should the tool handle records with missing or null receive_time values? → A: Skip records with missing/null receive_time and log a warning for each skipped record
-- Q: How should the tool behave when a business date has no data in any source system? → A: Continue processing and log a warning (treat as expected scenario, not error)
-- Q: How should the tool handle situations where available memory is insufficient to cache all transformed data in memory? → A: Fail gracefully with clear error message indicating memory requirements (prevents data corruption)
+**Note**: These clarifications have been formalized into Functional Requirements (FR-XXX) and Edge Cases. This section is retained for historical reference.
+
+- Q: What should happen when multiple instances of the ETL tool attempt to run simultaneously? → A: Prevent concurrent executions (enforce single instance via file lock/PID check with clear error) [→ FR-020]
+- Q: What is the typical daily data volume for performance and memory targets? → A: Approximate ranges per data source: XBond Market Quote: 1-10M records, XBond Trade: 100K-1M records, Bond Future L2 Quote: 10-50M records [→ SC-001, SC-009]
+- Q: How should the tool handle records with missing or null receive_time values? → A: Skip records with missing/null receive_time and log a warning for each skipped record [→ FR-021]
+- Q: How should the tool behave when a business date has no data in any source system? → A: Continue processing and log a warning (treat as expected scenario, not error) [→ FR-022]
+- Q: How should the tool handle situations where available memory is insufficient to cache all transformed data in memory? → A: Fail gracefully with clear error message indicating memory requirements (prevents data corruption) [→ FR-023]
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -84,13 +86,13 @@ The ETL tool automatically creates temporary stream tables in DolphinDB at the s
 
 ### Edge Cases
 
-- **What happens when the specified date range contains no data in any of the source systems?** → Tool continues processing and logs a warning (treats as expected scenario, not error)
-- How does the system handle connection failures to source systems (COS, MySQL, or DolphinDB)?
-- What happens when the CSV files contain malformed or missing data?
-- **How does the tool handle concurrent executions if multiple instances are run simultaneously?** → Tool prevents concurrent executions by enforcing single instance via file lock or PID check, reporting a clear error message if another instance is already running
-- **What happens when available memory is insufficient to cache all transformed data in memory?** → Tool fails gracefully with clear error message indicating memory requirements (prevents data corruption)
-- How does the system handle timezone differences between source data and business dates?
-- **What happens when the receive_time field is missing or null in source data?** → Tool skips records with missing/null receive_time and logs a warning for each skipped record
+- **No data in date range**: Tool continues processing and logs a warning (treats as expected scenario, not error). Each data source is queried independently; if all sources return zero records for a business date, the tool logs "Warning: No data found for business date {date} in any source system" and proceeds to next day.
+- **Connection failures**: Tool fails gracefully with clear error message indicating which connection failed and why. No retry logic is implemented; the tool immediately terminates with exit code 3 (Connection Error) and displays: "Error: Failed to connect to {system} - {specific error reason}". System is one of: COS, MySQL, or DolphinDB.
+- **Malformed or missing CSV data**: Tool logs the malformed record details (file path, line number, reason) and skips the record. Processing continues with next record. Error format: "Warning: Skipping malformed record at {file}:{line} - {reason}". For CSV parsing errors, the reason includes validation details (e.g., "missing required field: receive_time").
+- **Concurrent executions**: Tool prevents concurrent executions by enforcing single instance via file lock or PID check. On startup, tool attempts to acquire exclusive lock on `.etl-tool.pid` file. If lock cannot be acquired, tool terminates with exit code 8 (Concurrent Execution) and displays: "Error: Another instance of the ETL tool is already running (PID: {pid}). Only one instance can run at a time."
+- **Insufficient memory**: Tool performs pre-flight memory check before extraction. If estimated memory requirement exceeds 90% of available JVM heap memory, tool fails gracefully with exit code 7 (Memory Error) and displays: "Error: Insufficient memory. Required: {required} MB, Available: {available} MB. Increase JVM heap size with -Xmx parameter."
+- **Timezone handling**: Source data timestamps and business dates are in the same timezone (Asia/Shanghai). No timezone conversion is required. Business date YYYYMMDD format is directly comparable with date portions of timestamps.
+- **Missing receive_time field**: Tool skips records with missing/null receive_time and logs a warning for each skipped record. Warning format: "Warning: Skipping record with missing/null receive_time in {source} (file: {file}, line: {line})". This behavior applies to all three data sources.
 
 ## Requirements *(mandatory)*
 
@@ -98,7 +100,12 @@ The ETL tool automatically creates temporary stream tables in DolphinDB at the s
 
 - **FR-001**: System MUST accept two mandatory parameters: start date and end date in YYYYMMDD format
 - **FR-002**: System MUST accept one optional parameter: path to INI configuration file (defaulting to embedded config.ini if not provided)
-- **FR-003**: System MUST validate that start date is not after end date and both dates are in valid YYYYMMDD format
+- **FR-003**: System MUST validate that start date is not after end date and both dates are in valid YYYYMMDD format. Validation criteria:
+  - String must be exactly 8 characters
+  - Characters at positions 0-3 must be digits forming valid year (1900-2100)
+  - Characters at positions 4-5 must be digits forming valid month (01-12)
+  - Characters at positions 6-7 must be digits forming valid day (01-31)
+  - Invalid dates (e.g., 20250230, 20251301) must be rejected with clear error message: "Error: Invalid date format {date}. Expected format: YYYYMMDD (e.g., 20250101)"
 - **FR-004**: System MUST read INI configuration file to retrieve connection details for COS (endpoint, bucket), MySQL (host, port, database, username, password), and DolphinDB
 - **FR-005**: System MUST establish connections to all source systems and target system before starting ETL process
 - **FR-006**: System MUST process ETL day by day, completing all operations for the current day before proceeding to the next day
@@ -114,15 +121,18 @@ The ETL tool automatically creates temporary stream tables in DolphinDB at the s
 - **FR-016**: System MUST delete all temporary stream tables in DolphinDB at the end of execution (including on error)
 - **FR-017**: System MUST display execution progress to console including current date being processed, extraction status for each data source, and completion percentage
 - **FR-018**: System MUST halt execution and report clear error messages if any connection fails or data extraction encounters errors
+- **FR-024**: System MUST terminate with exit code 3 (Connection Error) when connection to COS, MySQL, or DolphinDB fails, displaying specific error reason and system name. No retry logic is implemented; connection failures cause immediate tool termination to prevent data corruption.
+- **FR-025**: System MUST log malformed CSV records with file path, line number, and validation reason, then skip the record and continue processing
 - **FR-019**: System MUST validate that all extracted data contains the receive_time field and handle missing/null values appropriately
 - **FR-021**: System MUST skip records with missing or null receive_time values and log a warning for each skipped record
 - **FR-020**: System MUST prevent concurrent executions by enforcing single instance via file lock or PID check, and report a clear error message if another instance is already running
 - **FR-022**: System MUST continue processing and log a warning when a business date contains no data in any source system (treat as expected scenario, not error)
 - **FR-023**: System MUST fail gracefully with a clear error message indicating memory requirements when available memory is insufficient to cache all transformed data
+- **FR-026**: System MUST assume all timestamps and business dates are in Asia/Shanghai timezone; no timezone conversion is required
 
 ### Key Entities *(include if feature involves data)*
 
-- **Business Date**: The date for which data is being extracted (format: YYYYMMDD), used to parameterize data source queries and file paths
+- **Business Date**: The date for which data is being extracted (format: YYYYMMDD for CLI input/storage; internally represented as LocalDate), used to parameterize data source queries and file paths
 - **ETL Job**: Represents a single execution of the tool with a specified date range, managing the lifecycle of connections, data extraction, transformation, and loading
 - **XBond Market Quote Data**: Financial market quote data extracted from CSV files in COS containing price and depth information with receive_time field (typical volume: 1-10M records per day)
 - **XBond Trade Data**: Financial trade data extracted from CSV files in COS containing transaction information with receive_time field (typical volume: 100K-1M records per day)
@@ -134,12 +144,12 @@ The ETL tool automatically creates temporary stream tables in DolphinDB at the s
 
 ### Measurable Outcomes
 
-- **SC-001**: Users can successfully complete a single-day ETL process for all three data sources within 5 minutes for typical daily data volumes (XBond Market Quote: 1-10M records, XBond Trade: 100K-1M records, Bond Future L2 Quote: 10-50M records)
+- **SC-001**: Users can successfully complete a single-day ETL process for all three data sources within 5 minutes for typical daily data volumes (XBond Market Quote: 5M records, XBond Trade: 500K records, Bond Future L2 Quote: 25M records). Performance should scale linearly: processing time for 2x volume should not exceed 2x baseline time.
 - **SC-002**: System can process and load data from all three sources (COS CSVs and MySQL) without data loss or corruption
 - **SC-003**: 100% of loaded records are correctly ordered by receive_time field within each day's dataset
 - **SC-004**: Temporary tables are created and deleted successfully in 100% of ETL job executions (both success and failure scenarios)
 - **SC-005**: Error messages clearly indicate the source of failure (connection, data extraction, validation, or loading) in 100% of failure scenarios
-- **SC-006**: Progress displays update at least once per data source per day, providing visibility into extraction and loading status
+- **SC-006**: Progress displays update at least once per data source per day, providing visibility into extraction and loading status. Update frequency: progress must be displayed at least every 10,000 records processed or every 5 seconds elapsed, whichever occurs first.
 - **SC-007**: Multi-day processing processes each day sequentially without overlapping or interleaving data between days
 - **SC-008**: Configuration validation catches 100% of missing or invalid parameters before attempting connections
-- **SC-009**: Memory usage remains within 90% of available system memory during normal operation with typical daily data volumes (XBond Market Quote: 1-10M records, XBond Trade: 100K-1M records, Bond Future L2 Quote: 10-50M records)
+- **SC-009**: Memory usage remains within 90% of available JVM heap memory during normal operation with typical daily data volumes (XBond Market Quote: 5M records, XBond Trade: 500K records, Bond Future L2 Quote: 25M records). Recommended JVM heap size: -Xmx4g for typical volumes. Pre-flight check must fail gracefully if estimated memory exceeds 90% of -Xmx setting.
