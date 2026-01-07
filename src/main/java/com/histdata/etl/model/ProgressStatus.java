@@ -58,6 +58,7 @@ public class ProgressStatus {
         this.quoteRecords = 0;
         this.tradeRecords = 0;
         this.futureRecords = 0;
+        this.totalRecords = 0;
     }
 
     /**

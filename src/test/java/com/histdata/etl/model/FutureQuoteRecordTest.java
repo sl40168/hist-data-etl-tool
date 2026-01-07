@@ -22,17 +22,17 @@ public class FutureQuoteRecordTest {
     public void testRequiredFields() {
         assertNotNull(record.getBusinessDate());
         assertEquals("T2503", record.getExchProductId());
-        assertEquals("FUTURE", record.getProductType());
+        assertEquals("BOND_FUT", record.getProductType());
         assertEquals("CFFEX", record.getExchange());
-        assertEquals("FUTURE", record.getSource());
-        assertEquals(1, record.getSettleSpeed());
-        assertEquals("L2", record.getLevel());
+        assertEquals("CFFEX", record.getSource());
+        assertEquals(0, record.getSettleSpeed());
+        assertEquals("L1", record.getLevel());
         assertEquals("Normal", record.getStatus());
     }
 
     @Test
-    public void testSettleSpeedAlwaysOne() {
-        assertEquals(1, record.getSettleSpeed());
+    public void testSettleSpeedAlwaysZero() {
+        assertEquals(0, record.getSettleSpeed());
     }
 
     @Test

@@ -23,6 +23,7 @@ public class DateUtils {
      */
     public static Date parseDateYYYYMMDD(String dateStr) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_YYYYMMDD);
+        sdf.setLenient(false);
         return sdf.parse(dateStr);
     }
 
@@ -35,6 +36,7 @@ public class DateUtils {
      */
     public static Date parseDate(String dateStr) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD);
+        sdf.setLenient(false);
         return sdf.parse(dateStr);
     }
 
@@ -48,6 +50,7 @@ public class DateUtils {
      */
     public static Date parseDate(String dateStr, String format) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
+        sdf.setLenient(false);
         return sdf.parse(dateStr);
     }
 
@@ -61,6 +64,7 @@ public class DateUtils {
      */
     public static Date parseTimestamp(String timestampStr) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(TIMESTAMP_FORMAT);
+        sdf.setLenient(false);
         return sdf.parse(timestampStr);
     }
 
@@ -74,6 +78,7 @@ public class DateUtils {
      */
     public static Date parseTimestamp(String timestampStr, String format) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
+        sdf.setLenient(false);
         return sdf.parse(timestampStr);
     }
 
