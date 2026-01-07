@@ -22,8 +22,8 @@ public class XbondTradeExtractor extends CosExtractor {
 
     @Override
     protected boolean matchesBusinessDate(CSVRecord record, LocalDate businessDate) {
-        String recordDateStr = record.get("business_date");
-        LocalDate recordDate = LocalDate.parse(recordDateStr.replace("-", ""));
-        return recordDate.equals(businessDate);
+        // File path is already filtered to correct date directory
+        // All records in this directory belong to the same business date
+        return true;
     }
 }

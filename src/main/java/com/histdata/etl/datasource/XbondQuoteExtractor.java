@@ -9,7 +9,7 @@ import java.time.LocalDate;
  * Extractor for XBond Market Quote (AllPriceDepth) CSV files from COS.
  */
 public class XbondQuoteExtractor extends CosExtractor {
-    private static final String FILE_PATTERN = "/AllPriceDepth/YYYY-MM-DD/*.csv";
+    private static final String FILE_PATTERN = "/AllPriceDepth/YYYYMMDD/*.csv";
 
     public XbondQuoteExtractor(CosConfig config) {
         super(config);
@@ -17,13 +17,13 @@ public class XbondQuoteExtractor extends CosExtractor {
 
     @Override
     protected String getFilePath(LocalDate businessDate) {
-        return FILE_PATTERN.replace("YYYY-MM-DD", businessDate.toString());
+        return FILE_PATTERN.replace("YYYYMMDD", businessDate.toString().replace("-", ""));
     }
 
     @Override
     protected boolean matchesBusinessDate(CSVRecord record, LocalDate businessDate) {
-        String recordDateStr = record.get("business_date");
-        LocalDate recordDate = LocalDate.parse(recordDateStr.replace("-", ""));
-        return recordDate.equals(businessDate);
+        // File path is already filtered to correct date directory
+        // All records in this directory belong to the same business date
+        return true;
     }
 }

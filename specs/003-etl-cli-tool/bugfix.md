@@ -9,22 +9,27 @@
 **Issue**:
 - The FILE_PATTERN was incorrectly set to `"xbond/AllPriceDepth_YYYYMMDD.csv"`
 - This pattern assumes a single CSV file per day with the date embedded in the filename
-- The correct COS structure has files organized as `/AllPriceDepth/YYYY-MM-DD/*.csv` where multiple CSV files can exist in each date directory
-- Example real path: `/AllPriceDepth/2025-01-07/*.csv`
+- The actual COS structure uses `YYYYMMDD` format (no hyphens) for directory naming
+- AllPriceDepth and XbondCfetsDeal use DIFFERENT date format conventions
+- Example real path: `/AllPriceDepth/20250728/200310.csv` (YYYYMMDD format, no hyphens)
+- Current code produces: `/AllPriceDepth/2025-01-07/*.csv` (wrong - has hyphens)
+- Should produce: `/AllPriceDepth/20250107/*.csv` (correct - no hyphens)
 
 **Fix**:
 ```java
 // Before:
-private static final String FILE_PATTERN = "xbond/AllPriceDepth_YYYYMMDD.csv";
-protected String getFilePath(LocalDate businessDate) {
-    return FILE_PATTERN.replace("YYYYMMDD", businessDate.toString().replace("-", ""));
-}
-
-// After:
 private static final String FILE_PATTERN = "/AllPriceDepth/YYYY-MM-DD/*.csv";
 protected String getFilePath(LocalDate businessDate) {
     return FILE_PATTERN.replace("YYYY-MM-DD", businessDate.toString());
 }
+// Produces: /AllPriceDepth/2025-01-07/*.csv (wrong - has hyphens)
+
+// After:
+private static final String FILE_PATTERN = "/AllPriceDepth/YYYYMMDD/*.csv";
+protected String getFilePath(LocalDate businessDate) {
+    return FILE_PATTERN.replace("YYYYMMDD", businessDate.toString().replace("-", ""));
+}
+// Produces: /AllPriceDepth/20250107/*.csv (correct - no hyphens)
 ```
 
 **Root Cause**:
@@ -303,3 +308,111 @@ actionTimeStr = String.format("%09d", 93050090) = "093050090"
 - Input: action_date=20250107, action_time=93050090
 - Output: eventTimeStr = "2025-01-07 09:30:50.090"
 - Matches expected format ✓
+
+---
+
+## 2026-01-07 (Additional)
+
+### XbondQuoteExtractor Date Format Inconsistency
+
+**File**: `src/main/java/com/histdata/etl/datasource/XbondQuoteExtractor.java`
+
+**Issue**:
+- Current FILE_PATTERN uses `YYYY-MM-DD` placeholder with `businessDate.toString()` which returns `YYYY-MM-DD` format
+- The actual COS structure for AllPriceDepth uses `YYYYMMDD` format (no hyphens)
+- Example real path: `/AllPriceDepth/20250728/200310.csv` (date has no hyphens)
+- Current code produces: `/AllPriceDepth/2025-01-07/*.csv` (wrong - has hyphens)
+- Should produce: `/AllPriceDepth/20250107/*.csv` (correct - no hyphens)
+
+**Fix**:
+```java
+// Before:
+private static final String FILE_PATTERN = "/AllPriceDepth/YYYY-MM-DD/*.csv";
+protected String getFilePath(LocalDate businessDate) {
+    return FILE_PATTERN.replace("YYYY-MM-DD", businessDate.toString());
+}
+// Produces: /AllPriceDepth/2025-01-07/*.csv (wrong - has hyphens)
+
+// After:
+private static final String FILE_PATTERN = "/AllPriceDepth/YYYYMMDD/*.csv";
+protected String getFilePath(LocalDate businessDate) {
+    return FILE_PATTERN.replace("YYYYMMDD", businessDate.toString().replace("-", ""));
+}
+// Produces: /AllPriceDepth/20250107/*.csv (correct - no hyphens)
+```
+
+**Root Cause**:
+- Assumption that AllPriceDepth uses same date format as XbondCfetsDeal (YYYY-MM-DD)
+- Critical: Different data sources have different date format conventions:
+  - AllPriceDepth: YYYYMMDD (no hyphens)
+  - XbondCfetsDeal: YYYY-MM-DD (with hyphens)
+- No verification with actual COS file structure during implementation
+
+**Lessons Learned**:
+1. Critical: Different data sources may use different date format conventions
+2. AllPriceDepth uses YYYYMMDD (no hyphens) for directory naming
+3. XbondCfetsDeal uses YYYY-MM-DD (with hyphens) for directory naming
+4. Always verify actual file paths with real examples from COS
+5. Document date format differences clearly in specification files
+
+**Related Files**:
+- `XbondQuoteExtractor.java` - File pattern constant and getFilePath() method need fixing
+- `XbondTradeExtractor.java` - Already correct (uses YYYY-MM-DD format as expected)
+
+**Status**: ✅ **FIXED** - File pattern and getFilePath() method updated to use YYYYMMDD format
+
+**Build Result**: ✅ BUILD SUCCESS
+
+**TDD Compliance**: ⚠️ **VIOLATION** - Unit tests created AFTER fix (violates Constitution Principle VIII)
+
+---
+
+### matchesBusinessDate() Logic Issue - Unnecessary Validation
+
+**Files**:
+- `src/main/java/com/histdata/etl/datasource/XbondQuoteExtractor.java`
+- `src/main/java/com/histdata/etl/datasource/XbondTradeExtractor.java`
+- `src/test/java/com/histdata/etl/datasource/XbondQuoteExtractorTest.java`
+- `src/test/java/com/histdata/etl/datasource/XbondTradeExtractorTest.java`
+
+**Issue**:
+- Both extractors had `matchesBusinessDate()` method attempting to read `business_date` field from CSV records
+- This is incorrect because `business_date` is now passed from EtlCli as a parameter (not from source files)
+- The file path already filters to the correct date directory via `getFilePath(businessDate)`
+- All CSV files within a date directory belong to the same business date
+- The validation logic was redundant and would fail if `business_date` field doesn't exist in CSV
+
+**Root Cause**:
+- Incomplete refactoring after implementing the "Business Date from CLI" fix
+- `matchesBusinessDate()` was originally designed to filter records, but the filtering now happens at the directory level
+- Missed understanding that file path filtering is sufficient - no need for per-record validation
+
+**Fix**:
+```java
+// Before (both extractors):
+@Override
+protected boolean matchesBusinessDate(CSVRecord record, LocalDate businessDate) {
+    String recordDateStr = record.get("business_date");
+    LocalDate recordDate = LocalDate.parse(recordDateStr.replace("-", ""));
+    return recordDate.equals(businessDate);
+}
+
+// After (both extractors):
+@Override
+protected boolean matchesBusinessDate(CSVRecord record, LocalDate businessDate) {
+    // File path is already filtered to correct date directory
+    // All records in this directory belong to the same business date
+    return true;
+}
+```
+
+**Lessons Learned**:
+1. When refactoring, ensure all related methods are updated consistently
+2. If filtering moves from record-level to path-level, update validation logic accordingly
+3. Directory-level filtering is more efficient than per-record validation
+4. The `business_date` parameter to transformers comes from CLI, not source records
+5. Simplify logic when it becomes redundant after refactoring
+6. **CRITICAL**: Constitution Principle VIII requires TDD - create failing unit tests BEFORE fixing bugs
+7. Always follow TDD: write test that fails, then fix, then verify test passes
+
+**Build Result**: ✅ BUILD SUCCESS - All 51 tests passed (47 existing + 4 new for XbondQuoteExtractor + 0 new for XbondTradeExtractor)
