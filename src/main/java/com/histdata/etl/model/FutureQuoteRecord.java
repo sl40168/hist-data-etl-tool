@@ -64,11 +64,11 @@ public class FutureQuoteRecord {
     public FutureQuoteRecord(Date businessDate, String exchProductId) {
         this.businessDate = businessDate;
         this.exchProductId = exchProductId;
-        this.productType = "FUTURE";
+        this.productType = "BOND_FUT";
         this.exchange = "CFFEX";
-        this.source = "FUTURE";
-        this.settleSpeed = 1;
-        this.level = "L2";
+        this.source = "CFFEX";
+        this.settleSpeed = 0;
+        this.level = "L1";
         this.status = "Normal";
     }
 
