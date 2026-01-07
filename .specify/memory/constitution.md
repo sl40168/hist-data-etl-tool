@@ -1,14 +1,14 @@
 <!--
 Sync Impact Report:
-- Version change: 1.2.0 → 1.3.0
+- Version change: 1.3.0 → 1.3.0 (no change, synchronization only)
 - Modified principles: None
-- Added sections: VIII. Bug Fix Documentation
+- Added sections: None
 - Removed sections: None
 - Templates requiring updates:
   ✅ plan-template.md - Constitution Check section aligns with new principles
   ✅ spec-template.md - No changes needed (structure still compatible)
   ✅ tasks-template.md - No changes needed (testing discipline preserved)
-  ⚠ commands/ - Directory does not exist, no updates needed
+  ⚠ .specify/templates/commands/ - Directory does not exist, no updates needed
 - Follow-up TODOs: None
 -->
 
@@ -85,6 +85,9 @@ Rationale: Centralized bug fix documentation enables knowledge sharing, prevents
 - **Library Selection**: All dependencies MUST be well-known, open-source components with active maintenance and Java 8 compatibility.
 - **Component Design**: All component boundaries MUST be defined through interfaces, not concrete classes. Implementation details MUST be hidden behind interface abstractions.
 - **Bug Fix Tracking**: All manually identified and resolved bugs MUST be documented in `specs/###-feature-name/bugfix.md`.
+- **Bug Fix Process (TDD)**: When any business logic bug is reported, create a new unit test to reproduce the bug firstly (the test MUST fail), then fix the bug and make all unit tests succeed.
+- **Build Validation**: A full Maven build with unit test running is required when a round of code modification is done.
+- **Implementation Review**: In the **implement** phase, go through all existing `bugfix.md` files and avoid involving the same issue.
 
 ## Governance
 

@@ -62,7 +62,7 @@ public class FutureQuoteTransformerTest {
 
         // Then
         assertNotNull("Result should not be null", result);
-        assertEquals("TF2412.CFFEX", result.getExchProductId());
+        assertEquals("TF2412", result.getExchProductId());
         
         // Verify event time is correctly formatted as "2025-01-07 09:30:50.090"
         Timestamp expectedEventTime = Timestamp.valueOf("2025-01-07 09:30:50.090");

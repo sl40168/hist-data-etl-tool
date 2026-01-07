@@ -30,7 +30,7 @@ public class FutureQuoteTransformer implements DataTransformer<Object> {
         String code = (String) record.get("code");
         java.sql.Date businessDateSql = new java.sql.Date(java.sql.Date.valueOf(businessDate).getTime());
 
-        String exchProductId = code + ".CFFEX";
+        String exchProductId = code;
         FutureQuoteRecord result = new FutureQuoteRecord(businessDateSql, exchProductId);
 
         result.setPreClosePrice(getDouble(record, "pre_close"));
