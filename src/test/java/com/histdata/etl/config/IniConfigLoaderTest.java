@@ -1,42 +1,24 @@
 package com.histdata.etl.config;
 
 import com.histdata.etl.exception.ConfigurationException;
-import org.apache.commons.configuration2.INIConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for IniConfigLoader.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class IniConfigLoaderTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-
-    @Mock
-    private FileBasedConfigurationBuilder<INIConfiguration> mockBuilder;
-
-    @Mock
-    private INIConfiguration mockConfig;
 
     private File tempConfigFile;
 
