@@ -20,3 +20,9 @@
 2026-01-07 02:37:29.655 [main] WARN  c.h.e.t.FutureQuoteTransformer - receive_time is null for future T2503, falling back to event_time
 2026-01-07 02:37:30.402 [main] WARN  c.h.e.t.XbondQuoteTransformer - receive_time is null for security 210210.IB, skipping record
 2026-01-07 02:37:30.434 [main] WARN  c.h.e.t.XbondTradeTransformer - recv_time is null for trade 210210, falling back to event_time
+2026-01-07 09:21:57.703 [main] WARN  c.h.e.t.FutureQuoteTransformer - receive_time is null for future T2503, falling back to event_time
+2026-01-07 09:21:59.628 [main] WARN  c.h.e.t.XbondQuoteTransformer - receive_time is null for security 210210.IB, skipping record
+2026-01-07 09:21:59.750 [main] WARN  c.h.e.t.XbondTradeTransformer - recv_time is null for trade 210210, falling back to event_time
+2026-01-07 09:25:13.298 [main] WARN  c.h.e.t.FutureQuoteTransformer - receive_time is null for future T2503, falling back to event_time
+2026-01-07 09:25:15.940 [main] WARN  c.h.e.t.XbondQuoteTransformer - receive_time is null for security 210210.IB, skipping record
+2026-01-07 09:25:16.033 [main] WARN  c.h.e.t.XbondTradeTransformer - recv_time is null for trade 210210, falling back to event_time
