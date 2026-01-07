@@ -3,6 +3,7 @@ package com.histdata.etl.transformer;
 import com.histdata.etl.model.XbondTradeRecord;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Test;
+import java.time.LocalDate;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -25,7 +26,7 @@ public class XbondTradeTransformerTest {
     @Test
     public void testInvalidInput() {
         try {
-            transformer.transform("invalid");
+            transformer.transform("invalid", LocalDate.of(2025, 1, 1));
             fail("Should throw IllegalArgumentException for invalid input");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Expected CSVRecord"));
@@ -37,7 +38,7 @@ public class XbondTradeTransformerTest {
     @Test
     public void testSuccessfulTransformation() throws Exception {
         CSVRecord record = mock(CSVRecord.class);
-        when(record.get("business_date")).thenReturn("20250101");
+
         when(record.get("bond_key")).thenReturn("210210");
         when(record.get("net_price")).thenReturn("100.5");
         when(record.get("set_days")).thenReturn("T+0");
@@ -48,7 +49,7 @@ public class XbondTradeTransformerTest {
         when(record.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         
-        XbondTradeRecord result = transformer.transform(record);
+        XbondTradeRecord result = transformer.transform(record, LocalDate.of(2025, 1, 1));
         
         assertNotNull(result);
         assertEquals("210210", result.getExchProductId());
@@ -68,7 +69,7 @@ public class XbondTradeTransformerTest {
     @Test
     public void testSettleSpeedMapping() throws Exception {
         CSVRecord record1 = mock(CSVRecord.class);
-        when(record1.get("business_date")).thenReturn("20250101");
+
         when(record1.get("bond_key")).thenReturn("210210");
         when(record1.get("net_price")).thenReturn("100.0");
         when(record1.get("set_days")).thenReturn("T+0");
@@ -79,11 +80,11 @@ public class XbondTradeTransformerTest {
         when(record1.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record1.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         
-        XbondTradeRecord result1 = transformer.transform(record1);
+        XbondTradeRecord result1 = transformer.transform(record1, LocalDate.of(2025, 1, 1));
         assertEquals(0, result1.getSettleSpeed());
 
         CSVRecord record2 = mock(CSVRecord.class);
-        when(record2.get("business_date")).thenReturn("20250101");
+
         when(record2.get("bond_key")).thenReturn("210210");
         when(record2.get("net_price")).thenReturn("100.0");
         when(record2.get("set_days")).thenReturn("T+1");
@@ -94,14 +95,14 @@ public class XbondTradeTransformerTest {
         when(record2.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record2.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         
-        XbondTradeRecord result2 = transformer.transform(record2);
+        XbondTradeRecord result2 = transformer.transform(record2, LocalDate.of(2025, 1, 1));
         assertEquals(1, result2.getSettleSpeed());
     }
 
     @Test
     public void testSideMapping() throws Exception {
         CSVRecord recordX = mock(CSVRecord.class);
-        when(recordX.get("business_date")).thenReturn("20250101");
+
         when(recordX.get("bond_key")).thenReturn("210210");
         when(recordX.get("net_price")).thenReturn("100.0");
         when(recordX.get("set_days")).thenReturn("T+0");
@@ -112,11 +113,11 @@ public class XbondTradeTransformerTest {
         when(recordX.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(recordX.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         
-        XbondTradeRecord resultX = transformer.transform(recordX);
+        XbondTradeRecord resultX = transformer.transform(recordX, LocalDate.of(2025, 1, 1));
         assertEquals("TKN", resultX.getLastTradeSide());
 
         CSVRecord recordY = mock(CSVRecord.class);
-        when(recordY.get("business_date")).thenReturn("20250101");
+
         when(recordY.get("bond_key")).thenReturn("210210");
         when(recordY.get("net_price")).thenReturn("100.0");
         when(recordY.get("set_days")).thenReturn("T+0");
@@ -127,11 +128,11 @@ public class XbondTradeTransformerTest {
         when(recordY.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(recordY.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         
-        XbondTradeRecord resultY = transformer.transform(recordY);
+        XbondTradeRecord resultY = transformer.transform(recordY, LocalDate.of(2025, 1, 1));
         assertEquals("GVN", resultY.getLastTradeSide());
 
         CSVRecord recordZ = mock(CSVRecord.class);
-        when(recordZ.get("business_date")).thenReturn("20250101");
+
         when(recordZ.get("bond_key")).thenReturn("210210");
         when(recordZ.get("net_price")).thenReturn("100.0");
         when(recordZ.get("set_days")).thenReturn("T+0");
@@ -142,11 +143,11 @@ public class XbondTradeTransformerTest {
         when(recordZ.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(recordZ.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         
-        XbondTradeRecord resultZ = transformer.transform(recordZ);
+        XbondTradeRecord resultZ = transformer.transform(recordZ, LocalDate.of(2025, 1, 1));
         assertEquals("TRD", resultZ.getLastTradeSide());
 
         CSVRecord recordD = mock(CSVRecord.class);
-        when(recordD.get("business_date")).thenReturn("20250101");
+
         when(recordD.get("bond_key")).thenReturn("210210");
         when(recordD.get("net_price")).thenReturn("100.0");
         when(recordD.get("set_days")).thenReturn("T+0");
@@ -157,14 +158,14 @@ public class XbondTradeTransformerTest {
         when(recordD.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(recordD.get("recv_time")).thenReturn("2025-01-01 09:30:00.000");
         
-        XbondTradeRecord resultD = transformer.transform(recordD);
+        XbondTradeRecord resultD = transformer.transform(recordD, LocalDate.of(2025, 1, 1));
         assertEquals("DONE", resultD.getLastTradeSide());
     }
 
     @Test
     public void testReceiveTimeFallback() throws Exception {
         CSVRecord record = mock(CSVRecord.class);
-        when(record.get("business_date")).thenReturn("20250101");
+
         when(record.get("bond_key")).thenReturn("210210");
         when(record.get("net_price")).thenReturn("100.0");
         when(record.get("set_days")).thenReturn("T+0");
@@ -175,7 +176,7 @@ public class XbondTradeTransformerTest {
         when(record.get("deal_time")).thenReturn("2025-01-01 09:30:00.000");
         when(record.get("recv_time")).thenReturn("");
         
-        XbondTradeRecord result = transformer.transform(record);
+        XbondTradeRecord result = transformer.transform(record, LocalDate.of(2025, 1, 1));
         
         assertNotNull(result.getReceiveTime());
         assertEquals(result.getEventTime(), result.getReceiveTime());

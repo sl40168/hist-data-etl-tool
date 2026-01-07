@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Map;
 
 /**
@@ -17,7 +19,7 @@ public class FutureQuoteTransformer implements DataTransformer<Object> {
     private static final Logger logger = LoggerFactory.getLogger(FutureQuoteTransformer.class);
 
     @Override
-    public FutureQuoteRecord transform(Object rawRecord) throws Exception {
+    public FutureQuoteRecord transform(Object rawRecord, LocalDate businessDate) throws Exception {
         if (!(rawRecord instanceof Map)) {
             throw new IllegalArgumentException("Expected Map, got: " + rawRecord.getClass());
         }
@@ -25,12 +27,11 @@ public class FutureQuoteTransformer implements DataTransformer<Object> {
         @SuppressWarnings("unchecked")
         Map<String, Object> record = (Map<String, Object>) rawRecord;
 
-        String businessDateStr = (String) record.get("business_date");
         String code = (String) record.get("code");
-        java.sql.Date businessDate = new java.sql.Date(DateUtils.parseDate(businessDateStr, "yyyyMMdd").getTime());
+        java.sql.Date businessDateSql = new java.sql.Date(java.sql.Date.valueOf(businessDate).getTime());
 
         String exchProductId = code + ".CFFEX";
-        FutureQuoteRecord result = new FutureQuoteRecord(businessDate, exchProductId);
+        FutureQuoteRecord result = new FutureQuoteRecord(businessDateSql, exchProductId);
 
         result.setPreClosePrice(getDouble(record, "pre_close"));
         result.setPreSettlePrice(getDouble(record, "pre_settle"));
@@ -70,20 +71,13 @@ public class FutureQuoteTransformer implements DataTransformer<Object> {
 
         int actionDate = getInteger(record, "action_date");
         int actionTime = getInteger(record, "action_time");
-        String actionDateStr = String.format("%08d", actionDate);
-        String actionTimeStr = String.format("%09d", actionTime);
-        String eventTimeStr = actionDateStr + "-" + 
-                actionTimeStr.substring(0, 2) + ":" + 
-                actionTimeStr.substring(2, 4) + ":" + 
-                actionTimeStr.substring(4, 6) + "." + 
-                actionTimeStr.substring(6);
-        java.sql.Timestamp eventTime = new java.sql.Timestamp(DateUtils.parseTimestamp(eventTimeStr, "yyyyMMdd-HH:mm:ss.SSS").getTime());
+        java.sql.Timestamp eventTime = buildTimestamp(actionDate, actionTime);
         result.setEventTime(eventTime);
 
         String receiveTimeStr = (String) record.get("receive_time");
         Timestamp receiveTime;
         if (receiveTimeStr != null && !receiveTimeStr.isEmpty()) {
-            receiveTime = new java.sql.Timestamp(DateUtils.parseTimestamp(receiveTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
+            receiveTime = Timestamp.valueOf(receiveTimeStr);
         } else {
             receiveTime = eventTime;
             logger.warn("receive_time is null for future {}, falling back to event_time", code);
@@ -183,5 +177,21 @@ public class FutureQuoteTransformer implements DataTransformer<Object> {
             return ((Number) value).intValue();
         }
         return Integer.parseInt(value.toString());
+    }
+
+    private java.sql.Timestamp buildTimestamp(int actionDate, int actionTime) throws ParseException {
+        String actionDateStr = String.format("%08d", actionDate);
+        String actionTimeStr = String.format("%09d", actionTime);
+
+        String eventTimeStr = String.format("%s-%s-%s %s:%s:%s.%s",
+                actionDateStr.substring(0, 4),  // 年
+                actionDateStr.substring(4, 6),  // 月
+                actionDateStr.substring(6, 8),  // 日
+                actionTimeStr.substring(0, 2),  // 小时
+                actionTimeStr.substring(2, 4),  // 分钟
+                actionTimeStr.substring(4, 6),  // 秒
+                actionTimeStr.substring(6));    // 毫秒
+
+        return new java.sql.Timestamp(DateUtils.parseTimestamp(eventTimeStr, "yyyy-MM-dd HH:mm:ss.SSS").getTime());
     }
 }

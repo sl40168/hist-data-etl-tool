@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 /**
  * Transforms XbondCfetsDeal CSV records into XbondTradeRecord objects.
@@ -17,18 +18,17 @@ public class XbondTradeTransformer implements DataTransformer<Object> {
     private static final Logger logger = LoggerFactory.getLogger(XbondTradeTransformer.class);
 
     @Override
-    public XbondTradeRecord transform(Object rawRecord) throws Exception {
+    public XbondTradeRecord transform(Object rawRecord, LocalDate businessDate) throws Exception {
         if (!(rawRecord instanceof CSVRecord)) {
             throw new IllegalArgumentException("Expected CSVRecord, got: " + rawRecord.getClass());
         }
 
         CSVRecord record = (CSVRecord) rawRecord;
 
-        String businessDateStr = record.get("business_date");
         String securityId = record.get("bond_key");
-        java.sql.Date businessDate = new java.sql.Date(DateUtils.parseDate(businessDateStr, "yyyyMMdd").getTime());
+        java.sql.Date businessDateSql = new java.sql.Date(java.sql.Date.valueOf(businessDate).getTime());
 
-        XbondTradeRecord result = new XbondTradeRecord(businessDate, securityId);
+        XbondTradeRecord result = new XbondTradeRecord(businessDateSql, securityId);
 
         double netPrice = Double.parseDouble(record.get("net_price"));
         result.setLastTradePrice(netPrice);

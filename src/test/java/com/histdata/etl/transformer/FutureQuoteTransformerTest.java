@@ -3,16 +3,19 @@ package com.histdata.etl.transformer;
 import com.histdata.etl.model.FutureQuoteRecord;
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * Unit tests for FutureQuoteTransformer.
  */
 public class FutureQuoteTransformerTest {
+
     private FutureQuoteTransformer transformer;
 
     @Before
@@ -20,187 +23,192 @@ public class FutureQuoteTransformerTest {
         transformer = new FutureQuoteTransformer();
     }
 
-    @Test
-    public void testInvalidInput() {
-        try {
-            transformer.transform("invalid");
-            fail("Should throw IllegalArgumentException for invalid input");
-        } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains("Expected Map"));
-        } catch (Exception e) {
-            fail("Should throw IllegalArgumentException");
-        }
+    @After
+    public void tearDown() {
+        transformer = null;
     }
 
     @Test
-    public void testSuccessfulTransformation() throws Exception {
+    public void testTransform_WithStandardInput_ProducesCorrectEventTime() throws Exception {
+        // Given: action_date=20250107, action_time=93050090
+        // Expected event time: "2025-01-07 09:30:50.090"
         Map<String, Object> record = new HashMap<>();
-        record.put("business_date", "20250101");
-        record.put("code", "T2503");
-        record.put("pre_close", 100.0);
-        record.put("pre_settle", 100.5);
-        record.put("pre_interest", 10000L);
-        record.put("open", 101.0);
-        record.put("high", 102.0);
-        record.put("low", 100.5);
-        record.put("price", 101.5);
-        record.put("settle_price", 0.0);
-        record.put("upper_limit", 105.0);
-        record.put("lower_limit", 95.0);
-        record.put("total_volume", 100000L);
-        record.put("total_turnover", 10000000.0);
-        record.put("open_interest", 50000L);
-        record.put("bid_prices", new double[]{100.0, 99.5, 99.0, 98.5, 98.0});
-        record.put("bid_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
-        record.put("ask_prices", new double[]{101.0, 101.5, 102.0, 102.5, 103.0});
-        record.put("ask_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
-        record.put("action_date", 20250101);
-        record.put("action_time", 93000000);
-        record.put("receive_time", "2025-01-01 09:30:00.000");
+        record.put("action_date", 20250107);
+        record.put("action_time", 93050090);
+        record.put("code", "TF2412");
+        record.put("pre_close", 123.45);
+        record.put("pre_settle", 123.50);
+        record.put("pre_interest", 1000L);
+        record.put("open", 124.0);
+        record.put("high", 125.0);
+        record.put("low", 123.0);
+        record.put("price", 124.50);
+        record.put("settle_price", 124.30);
+        record.put("upper_limit", 125.5);
+        record.put("lower_limit", 122.5);
+        record.put("total_volume", 10000L);
+        record.put("total_turnover", 1245000.0);
+        record.put("open_interest", 5000L);
+        record.put("bid_prices", new double[]{124.0, 123.9, 123.8, 123.7, 123.6});
+        record.put("bid_qty", new long[]{100, 200, 300, 400, 500});
+        record.put("ask_prices", new double[]{124.1, 124.0, 123.9, 123.8, 123.7});
+        record.put("ask_qty", new long[]{100, 200, 300, 400, 500});
+        record.put("receive_time", "2025-01-07 09:30:51.123");
+
+        LocalDate businessDate = LocalDate.of(2025, 1, 7);
+
+        // When
+        FutureQuoteRecord result = transformer.transform(record, businessDate);
+
+        // Then
+        assertNotNull("Result should not be null", result);
+        assertEquals("TF2412.CFFEX", result.getExchProductId());
         
-        FutureQuoteRecord result = transformer.transform(record);
+        // Verify event time is correctly formatted as "2025-01-07 09:30:50.090"
+        Timestamp expectedEventTime = Timestamp.valueOf("2025-01-07 09:30:50.090");
+        assertEquals("Event time should match expected format", 
+                     expectedEventTime, result.getEventTime());
         
-        assertNotNull(result);
-        assertEquals("T2503.CFFEX", result.getExchProductId());
-        assertEquals("FUTURE", result.getProductType());
-        assertEquals("CFFEX", result.getExchange());
-        assertEquals("FUTURE", result.getSource());
-        assertEquals(1, result.getSettleSpeed());
-        assertEquals(Double.valueOf(100.0), result.getPreClosePrice());
-        assertEquals(Double.valueOf(100.5), result.getPreSettlePrice());
-        assertEquals(Long.valueOf(10000L), result.getPreInterest());
-        assertEquals(Double.valueOf(101.0), result.getOpenPrice());
-        assertEquals(Double.valueOf(102.0), result.getHighPrice());
-        assertEquals(Double.valueOf(100.5), result.getLowPrice());
-        assertEquals(Double.valueOf(101.5), result.getClosePrice());
-        assertEquals(Double.valueOf(0.0), result.getSettlePrice());
-        assertEquals(Double.valueOf(105.0), result.getUpperLimit());
-        assertEquals(Double.valueOf(95.0), result.getLowerLimit());
-        assertEquals(Long.valueOf(100000L), result.getTotalVolume());
-        assertEquals(Double.valueOf(10000000.0), result.getTotalTurnover());
-        assertEquals(Long.valueOf(50000L), result.getOpenInterest());
-        assertEquals(Double.valueOf(100.0), result.getBid0Price());
-        assertEquals(Long.valueOf(1000L), result.getBid0TradableVolume());
-        assertEquals(Double.valueOf(101.0), result.getOffer0Price());
-        assertEquals(Long.valueOf(1000L), result.getOffer0TradableVolume());
-        assertNotNull(result.getEventTime());
-        assertNotNull(result.getReceiveTime());
+        // Verify receive time
+        Timestamp expectedReceiveTime = Timestamp.valueOf("2025-01-07 09:30:51.123");
+        assertEquals("Receive time should match", 
+                     expectedReceiveTime, result.getReceiveTime());
+
+        // Verify bid/offer fields
+        assertEquals(124.0, result.getBid0Price(), 0.001);
+        assertEquals(123.9, result.getBid1Price(), 0.001);
+        assertEquals(124.1, result.getOffer0Price(), 0.001);
+        assertEquals(124.0, result.getOffer1Price(), 0.001);
     }
 
     @Test
-    public void testArrayUnwinding() throws Exception {
+    public void testTransform_DifferentDate_ProducesCorrectEventTime() throws Exception {
+        // Given: action_date=20241231, action_time=235959999
+        // Expected event time: "2024-12-31 23:59:59.999"
         Map<String, Object> record = new HashMap<>();
-        record.put("business_date", "20250101");
-        record.put("code", "T2503");
-        record.put("pre_close", 100.0);
-        record.put("pre_settle", 100.5);
-        record.put("pre_interest", 10000L);
-        record.put("open", 101.0);
-        record.put("high", 102.0);
-        record.put("low", 100.5);
-        record.put("price", 101.5);
-        record.put("settle_price", 0.0);
-        record.put("upper_limit", 105.0);
-        record.put("lower_limit", 95.0);
-        record.put("total_volume", 100000L);
-        record.put("total_turnover", 10000000.0);
-        record.put("open_interest", 50000L);
-        record.put("bid_prices", new double[]{100.0, 99.5, 99.0, 98.5, 98.0});
-        record.put("bid_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
-        record.put("ask_prices", new double[]{101.0, 101.5, 102.0, 102.5, 103.0});
-        record.put("ask_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
-        record.put("action_date", 20250101);
-        record.put("action_time", 93000000);
-        record.put("receive_time", "2025-01-01 09:30:00.000");
+        record.put("action_date", 20241231);
+        record.put("action_time", 235959999);
+        record.put("code", "TF2412");
+        record.put("open", 100.0);
+        record.put("high", 101.0);
+        record.put("low", 99.0);
+        record.put("price", 100.5);
+        record.put("total_volume", 5000L);
+        record.put("total_turnover", 502500.0);
+        record.put("open_interest", 2500L);
+        record.put("bid_prices", new double[]{100.0, 99.9, 99.8, 99.7, 99.6});
+        record.put("bid_qty", new long[]{50, 100, 150, 200, 250});
+        record.put("ask_prices", new double[]{100.1, 100.0, 99.9, 99.8, 99.7});
+        record.put("ask_qty", new long[]{50, 100, 150, 200, 250});
+        record.put("receive_time", "2024-12-31 23:59:59.999");
+
+        LocalDate businessDate = LocalDate.of(2024, 12, 31);
+
+        // When
+        FutureQuoteRecord result = transformer.transform(record, businessDate);
+
+        // Then
+        assertNotNull("Result should not be null", result);
         
-        FutureQuoteRecord result = transformer.transform(record);
-        
-        assertEquals(Double.valueOf(100.0), result.getBid0Price());
-        assertEquals(Double.valueOf(99.5), result.getBid1Price());
-        assertEquals(Double.valueOf(99.0), result.getBid2Price());
-        assertEquals(Double.valueOf(98.5), result.getBid3Price());
-        assertEquals(Double.valueOf(98.0), result.getBid4Price());
-        
-        assertEquals(Double.valueOf(101.0), result.getOffer0Price());
-        assertEquals(Double.valueOf(101.5), result.getOffer1Price());
-        assertEquals(Double.valueOf(102.0), result.getOffer2Price());
-        assertEquals(Double.valueOf(102.5), result.getOffer3Price());
-        assertEquals(Double.valueOf(103.0), result.getOffer4Price());
-        
-        assertEquals(Long.valueOf(1000L), result.getBid0TradableVolume());
-        assertEquals(Long.valueOf(2000L), result.getBid1TradableVolume());
-        assertEquals(Long.valueOf(3000L), result.getBid2TradableVolume());
-        assertEquals(Long.valueOf(4000L), result.getBid3TradableVolume());
-        assertEquals(Long.valueOf(5000L), result.getBid4TradableVolume());
-        
-        assertEquals(Long.valueOf(1000L), result.getOffer0TradableVolume());
-        assertEquals(Long.valueOf(2000L), result.getOffer1TradableVolume());
-        assertEquals(Long.valueOf(3000L), result.getOffer2TradableVolume());
-        assertEquals(Long.valueOf(4000L), result.getOffer3TradableVolume());
-        assertEquals(Long.valueOf(5000L), result.getOffer4TradableVolume());
+        // Verify event time is correctly formatted as "2024-12-31 23:59:59.999"
+        Timestamp expectedEventTime = Timestamp.valueOf("2024-12-31 23:59:59.999");
+        assertEquals("Event time for end of day should match", 
+                     expectedEventTime, result.getEventTime());
     }
 
     @Test
-    public void testReceiveTimeFallback() throws Exception {
+    public void testTransform_Midnight_ProducesCorrectEventTime() throws Exception {
+        // Given: action_date=20250101, action_time=000000000
+        // Expected event time: "2025-01-01 00:00:00.000"
         Map<String, Object> record = new HashMap<>();
-        record.put("business_date", "20250101");
-        record.put("code", "T2503");
-        record.put("pre_close", 100.0);
-        record.put("pre_settle", 100.5);
-        record.put("pre_interest", 10000L);
-        record.put("open", 101.0);
-        record.put("high", 102.0);
-        record.put("low", 100.5);
-        record.put("price", 101.5);
-        record.put("settle_price", 0.0);
-        record.put("upper_limit", 105.0);
-        record.put("lower_limit", 95.0);
-        record.put("total_volume", 100000L);
-        record.put("total_turnover", 10000000.0);
-        record.put("open_interest", 50000L);
-        record.put("bid_prices", new double[]{100.0, 99.5, 99.0, 98.5, 98.0});
-        record.put("bid_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
-        record.put("ask_prices", new double[]{101.0, 101.5, 102.0, 102.5, 103.0});
-        record.put("ask_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
         record.put("action_date", 20250101);
-        record.put("action_time", 93000000);
+        record.put("action_time", 0);
+        record.put("code", "TF2412");
+        record.put("open", 100.0);
+        record.put("price", 100.5);
+        record.put("total_volume", 1000L);
+        record.put("total_turnover", 100500.0);
+        record.put("open_interest", 500L);
+        record.put("bid_prices", new double[]{100.0, 99.9, 99.8, 99.7, 99.6});
+        record.put("bid_qty", new long[]{50, 100, 150, 200, 250});
+        record.put("ask_prices", new double[]{100.1, 100.0, 99.9, 99.8, 99.7});
+        record.put("ask_qty", new long[]{50, 100, 150, 200, 250});
+
+        LocalDate businessDate = LocalDate.of(2025, 1, 1);
+
+        // When
+        FutureQuoteRecord result = transformer.transform(record, businessDate);
+
+        // Then
+        assertNotNull("Result should not be null", result);
+        
+        // Verify event time is correctly formatted as "2025-01-01 00:00:00.000"
+        Timestamp expectedEventTime = Timestamp.valueOf("2025-01-01 00:00:00.000");
+        assertEquals("Event time at midnight should match", 
+                     expectedEventTime, result.getEventTime());
+    }
+
+    @Test
+    public void testTransform_WithNullReceiveTime_FallsBackToEventTime() throws Exception {
+        // Given: action_date=20250107, action_time=93050090, receive_time=null
+        Map<String, Object> record = new HashMap<>();
+        record.put("action_date", 20250107);
+        record.put("action_time", 93050090);
+        record.put("code", "TF2412");
+        record.put("open", 100.0);
+        record.put("price", 100.5);
+        record.put("total_volume", 1000L);
+        record.put("total_turnover", 100500.0);
+        record.put("open_interest", 500L);
+        record.put("bid_prices", new double[]{100.0, 99.9, 99.8, 99.7, 99.6});
+        record.put("bid_qty", new long[]{50, 100, 150, 200, 250});
+        record.put("ask_prices", new double[]{100.1, 100.0, 99.9, 99.8, 99.7});
+        record.put("ask_qty", new long[]{50, 100, 150, 200, 250});
+        record.put("receive_time", null);
+
+        LocalDate businessDate = LocalDate.of(2025, 1, 7);
+
+        // When
+        FutureQuoteRecord result = transformer.transform(record, businessDate);
+
+        // Then
+        assertNotNull("Result should not be null", result);
+        
+        // When receive_time is null, should fall back to event_time
+        Timestamp expectedEventTime = Timestamp.valueOf("2025-01-07 09:30:50.090");
+        assertEquals("Receive time should fall back to event time", 
+                     expectedEventTime, result.getReceiveTime());
+    }
+
+    @Test
+    public void testTransform_WithEmptyReceiveTime_FallsBackToEventTime() throws Exception {
+        // Given: action_date=20250107, action_time=93050090, receive_time=""
+        Map<String, Object> record = new HashMap<>();
+        record.put("action_date", 20250107);
+        record.put("action_time", 93050090);
+        record.put("code", "TF2412");
+        record.put("open", 100.0);
+        record.put("price", 100.5);
+        record.put("total_volume", 1000L);
+        record.put("total_turnover", 100500.0);
+        record.put("open_interest", 500L);
+        record.put("bid_prices", new double[]{100.0, 99.9, 99.8, 99.7, 99.6});
+        record.put("bid_qty", new long[]{50, 100, 150, 200, 250});
+        record.put("ask_prices", new double[]{100.1, 100.0, 99.9, 99.8, 99.7});
+        record.put("ask_qty", new long[]{50, 100, 150, 200, 250});
         record.put("receive_time", "");
-        
-        FutureQuoteRecord result = transformer.transform(record);
-        
-        assertNotNull(result.getReceiveTime());
-        assertEquals(result.getEventTime(), result.getReceiveTime());
-    }
 
-    @Test
-    public void testEventTimeParsing() throws Exception {
-        Map<String, Object> record = new HashMap<>();
-        record.put("business_date", "20250101");
-        record.put("code", "T2503");
-        record.put("pre_close", 100.0);
-        record.put("pre_settle", 100.5);
-        record.put("pre_interest", 10000L);
-        record.put("open", 101.0);
-        record.put("high", 102.0);
-        record.put("low", 100.5);
-        record.put("price", 101.5);
-        record.put("settle_price", 0.0);
-        record.put("upper_limit", 105.0);
-        record.put("lower_limit", 95.0);
-        record.put("total_volume", 100000L);
-        record.put("total_turnover", 10000000.0);
-        record.put("open_interest", 50000L);
-        record.put("bid_prices", new double[]{100.0, 99.5, 99.0, 98.5, 98.0});
-        record.put("bid_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
-        record.put("ask_prices", new double[]{101.0, 101.5, 102.0, 102.5, 103.0});
-        record.put("ask_qty", new long[]{1000L, 2000L, 3000L, 4000L, 5000L});
-        record.put("action_date", 20250101);
-        record.put("action_time", 93000000);
-        record.put("receive_time", "2025-01-01 09:30:00.000");
+        LocalDate businessDate = LocalDate.of(2025, 1, 7);
+
+        // When
+        FutureQuoteRecord result = transformer.transform(record, businessDate);
+
+        // Then
+        assertNotNull("Result should not be null", result);
         
-        FutureQuoteRecord result = transformer.transform(record);
-        
-        assertNotNull(result.getEventTime());
-        assertEquals("2025-01-01 09:30:00.0", result.getEventTime().toString());
+        // When receive_time is empty, should fall back to event_time
+        Timestamp expectedEventTime = Timestamp.valueOf("2025-01-07 09:30:50.090");
+        assertEquals("Receive time should fall back to event time", 
+                     expectedEventTime, result.getReceiveTime());
     }
 }

@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.1.0 → 1.2.0
+- Version change: 1.2.0 → 1.3.0
 - Modified principles: None
-- Added sections: VII. Interface-Based Component Boundaries
+- Added sections: VIII. Bug Fix Documentation
 - Removed sections: None
 - Templates requiring updates:
   ✅ plan-template.md - Constitution Check section aligns with new principles
@@ -56,6 +56,15 @@ All component boundaries MUST be clearly defined and enforced through interfaces
 
 Rationale: Interface-based boundaries enable testability (mocking/stubbing), flexibility (swappable implementations), and maintainability (clear separation of concerns). Direct dependencies on concrete classes violate this principle.
 
+### VIII. Bug Fix Documentation
+All bug fixes identified and resolved during development MUST be documented in `bugfix.md`. The bugfix documentation file MUST:
+- Reside in the same directory as the corresponding `spec.md` for the feature
+- Follow the versioned feature directory structure (e.g., `specs/###-feature-name/bugfix.md`)
+- Include date of identification, affected files, issue description, fix details, and lessons learned
+- Be maintained as a living document for each feature iteration
+
+Rationale: Centralized bug fix documentation enables knowledge sharing, prevents recurring issues, and provides a reference for future maintenance. Placing `bugfix.md` alongside `spec.md` maintains context and traceability within feature boundaries.
+
 ## Technology Stack
 
 - **Build Tool**: Maven 3.6.3 (strict requirement)
@@ -65,6 +74,7 @@ Rationale: Interface-based boundaries enable testability (mocking/stubbing), fle
 - **Testing Framework**: JUnit (recommended for Java 8)
 - **Library Policy**: Well-known, open-source components only (see Principle VI)
 - **Architecture**: Interface-based component boundaries (see Principle VII)
+- **Bug Tracking**: Documentation in feature-specific `bugfix.md` files (see Principle VIII)
 
 ## Quality Standards
 
@@ -74,6 +84,7 @@ Rationale: Interface-based boundaries enable testability (mocking/stubbing), fle
 - **Code Organization**: Follow Maven directory structure with `src/main/java` for production code and `src/test/java` for tests.
 - **Library Selection**: All dependencies MUST be well-known, open-source components with active maintenance and Java 8 compatibility.
 - **Component Design**: All component boundaries MUST be defined through interfaces, not concrete classes. Implementation details MUST be hidden behind interface abstractions.
+- **Bug Fix Tracking**: All manually identified and resolved bugs MUST be documented in `specs/###-feature-name/bugfix.md`.
 
 ## Governance
 
@@ -94,5 +105,6 @@ This constitution is the authoritative source for all project decisions and MUST
 - Violations of Core Principles MUST be explicitly justified with business or technical necessity
 - Complexity beyond what these principles prescribe MUST be documented and approved
 - Periodic compliance reviews SHOULD be conducted to ensure ongoing adherence
+- Bug fixes MUST be documented in `bugfix.md` files within feature directories as per Principle VIII
 
-**Version**: 1.2.0 | **Ratified**: 2026-01-05 | **Last Amended**: 2026-01-06
+**Version**: 1.3.0 | **Ratified**: 2026-01-05 | **Last Amended**: 2026-01-07

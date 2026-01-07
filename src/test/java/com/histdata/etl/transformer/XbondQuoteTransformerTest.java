@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import java.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class XbondQuoteTransformerTest {
     @Test
     public void testInvalidInput() {
         try {
-            transformer.transform("invalid");
+            transformer.transform("invalid", LocalDate.of(2025, 1, 1));
             fail("Should throw IllegalArgumentException for invalid input");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Expected Map"));
@@ -42,7 +43,7 @@ public class XbondQuoteTransformerTest {
     @Test
     public void testEmptyMap() throws Exception {
         Map<String, List<CSVRecord>> emptyMap = new HashMap<>();
-        XbondQuoteRecord result = transformer.transform(emptyMap);
+        XbondQuoteRecord result = transformer.transform(emptyMap, LocalDate.of(2025, 1, 1));
         assertNull(result);
     }
 
@@ -52,7 +53,7 @@ public class XbondQuoteTransformerTest {
         List<CSVRecord> records = new ArrayList<>();
         
         CSVRecord record = mock(CSVRecord.class);
-        when(record.get("business_date")).thenReturn("20250101");
+
         when(record.get("underlying_security_id")).thenReturn("210210");
         when(record.get("underlying_settlement_type")).thenReturn("1");
         when(record.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
@@ -61,7 +62,7 @@ public class XbondQuoteTransformerTest {
         
         groupedRecords.put("key", records);
         
-        XbondQuoteRecord result = transformer.transform(groupedRecords);
+        XbondQuoteRecord result = transformer.transform(groupedRecords, LocalDate.of(2025, 1, 1));
         assertNull(result);
     }
 
@@ -71,7 +72,7 @@ public class XbondQuoteTransformerTest {
         List<CSVRecord> records = new ArrayList<>();
         
         CSVRecord record1 = mock(CSVRecord.class);
-        when(record1.get("business_date")).thenReturn("20250101");
+
         when(record1.get("underlying_security_id")).thenReturn("210210");
         when(record1.get("underlying_settlement_type")).thenReturn("1");
         when(record1.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
@@ -88,7 +89,7 @@ public class XbondQuoteTransformerTest {
         
         groupedRecords.put("key", records);
         
-        XbondQuoteRecord result = transformer.transform(groupedRecords);
+        XbondQuoteRecord result = transformer.transform(groupedRecords, LocalDate.of(2025, 1, 1));
         
         assertNotNull(result);
         assertEquals("210210.IB", result.getExchProductId());
@@ -104,7 +105,7 @@ public class XbondQuoteTransformerTest {
         List<CSVRecord> records1 = new ArrayList<>();
         
         CSVRecord record1 = mock(CSVRecord.class);
-        when(record1.get("business_date")).thenReturn("20250101");
+
         when(record1.get("underlying_security_id")).thenReturn("210210");
         when(record1.get("underlying_settlement_type")).thenReturn("1");
         when(record1.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
@@ -121,14 +122,14 @@ public class XbondQuoteTransformerTest {
         
         groupedRecords1.put("key", records1);
         
-        XbondQuoteRecord result1 = transformer.transform(groupedRecords1);
+        XbondQuoteRecord result1 = transformer.transform(groupedRecords1, LocalDate.of(2025, 1, 1));
         assertEquals(0, result1.getSettleSpeed());
 
         Map<String, List<CSVRecord>> groupedRecords2 = new HashMap<>();
         List<CSVRecord> records2 = new ArrayList<>();
         
         CSVRecord record2 = mock(CSVRecord.class);
-        when(record2.get("business_date")).thenReturn("20250101");
+
         when(record2.get("underlying_security_id")).thenReturn("210210");
         when(record2.get("underlying_settlement_type")).thenReturn("2");
         when(record2.get("transact_time")).thenReturn("2025-01-01 09:30:00.000");
@@ -145,7 +146,7 @@ public class XbondQuoteTransformerTest {
         
         groupedRecords2.put("key", records2);
         
-        XbondQuoteRecord result2 = transformer.transform(groupedRecords2);
+        XbondQuoteRecord result2 = transformer.transform(groupedRecords2, LocalDate.of(2025, 1, 1));
         assertEquals(1, result2.getSettleSpeed());
     }
 }

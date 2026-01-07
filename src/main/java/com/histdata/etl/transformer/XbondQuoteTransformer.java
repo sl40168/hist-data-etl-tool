@@ -6,10 +6,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
-
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -24,7 +24,7 @@ public class XbondQuoteTransformer implements DataTransformer<Object> {
     private static final Logger logger = LoggerFactory.getLogger(XbondQuoteTransformer.class);
 
     @Override
-    public XbondQuoteRecord transform(Object rawRecord) throws Exception {
+    public XbondQuoteRecord transform(Object rawRecord, LocalDate businessDate) throws Exception {
         if (!(rawRecord instanceof Map)) {
             throw new IllegalArgumentException("Expected Map of CSVRecords, got: " + rawRecord.getClass());
         }
@@ -36,17 +36,16 @@ public class XbondQuoteTransformer implements DataTransformer<Object> {
             return null;
         }
 
+        Date businessDateSql = new Date(java.sql.Date.valueOf(businessDate).getTime());
         XbondQuoteRecord result = null;
 
         for (Map.Entry<String, List<CSVRecord>> entry : groupedRecords.entrySet()) {
             List<CSVRecord> records = entry.getValue();
             CSVRecord firstRecord = records.get(0);
 
-            String businessDateStr = firstRecord.get("business_date");
             String securityId = firstRecord.get("underlying_security_id") + ".IB";
-            Date businessDate = new Date(DateUtils.parseDateYYYYMMDD(businessDateStr).getTime());
 
-            result = new XbondQuoteRecord(businessDate, securityId);
+            result = new XbondQuoteRecord(businessDateSql, securityId);
 
             int settleSpeedRaw = Integer.parseInt(firstRecord.get("underlying_settlement_type"));
             result.setSettleSpeed(settleSpeedRaw == 1 ? 0 : 1);

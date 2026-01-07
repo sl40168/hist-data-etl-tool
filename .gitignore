@@ -1,11 +1,70 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.properties
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+*.launch
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+logs/
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Temp files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# COS credentials (should not be committed)
+*.secret
+*.key
+*.properties
+
+# Project-specific (existing entries)
 /target/surefire-reports/2026-01-07T09-27-26_798.dumpstream
 /target/surefire-reports/com.histdata.etl.cli.EtlCliTest.txt
 /target/surefire-reports/com.histdata.etl.model.FutureQuoteRecordTest.txt
 /target/surefire-reports/com.histdata.etl.model.XbondQuoteRecordTest.txt
 /target/surefire-reports/com.histdata.etl.model.XbondTradeRecordTest.txt
 /target/surefire-reports/com.histdata.etl.transformer.FutureQuoteTransformerTest.txt
-/target/surefire-reports/com.histdata.etl.transformer.XbondQuoteTransformerTest.txt
-/target/surefire-reports/com.histdata.etl.transformer.XbondTradeTransformerTest.txt
+/target/surefire-reports/com.histdata.etl.transformer/XbondQuoteTransformerTest.txt
+/target/surefire-reports/com.histdata.etl.transformer/XbondTradeTransformerTest.txt
 /target/classes/com/histdata/etl/exception/ConcurrentExecutionException.class
 /target/classes/com/histdata/etl/config/Config.class
 /target/classes/config.ini
@@ -49,8 +108,8 @@
 /target/surefire-reports/TEST-com.histdata.etl.model.XbondQuoteRecordTest.xml
 /target/surefire-reports/TEST-com.histdata.etl.model.XbondTradeRecordTest.xml
 /target/surefire-reports/TEST-com.histdata.etl.transformer.FutureQuoteTransformerTest.xml
-/target/surefire-reports/TEST-com.histdata.etl.transformer.XbondQuoteTransformerTest.xml
-/target/surefire-reports/TEST-com.histdata.etl.transformer.XbondTradeTransformerTest.xml
+/target/surefire-reports/TEST-com.histdata.etl.transformer/XbondQuoteTransformerTest.xml
+/target/surefire-reports/TEST-com.histdata.etl.transformer/XbondTradeTransformerTest.xml
 /target/classes/com/histdata/etl/exception/TransformationException.class
 /target/classes/com/histdata/etl/datasource/XbondQuoteExtractor.class
 /target/classes/com/histdata/etl/model/XbondQuoteRecord.class

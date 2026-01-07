@@ -263,7 +263,7 @@ public class EtlCli {
         return rawRecords.stream()
                 .map(record -> {
                     try {
-                        return transformer.transform(record);
+                        return transformer.transform(record, date);
                     } catch (Exception e) {
                         logger.warn("Failed to transform quote record: {}", e.getMessage());
                         return null;
@@ -282,7 +282,7 @@ public class EtlCli {
         return rawRecords.stream()
                 .map(record -> {
                     try {
-                        return transformer.transform(record);
+                        return transformer.transform(record, date);
                     } catch (Exception e) {
                         logger.warn("Failed to transform trade record: {}", e.getMessage());
                         return null;
@@ -301,7 +301,7 @@ public class EtlCli {
         return rawRecords.stream()
                 .map(record -> {
                     try {
-                        return transformer.transform(record);
+                        return transformer.transform(record, date);
                     } catch (Exception e) {
                         logger.warn("Failed to transform future record: {}", e.getMessage());
                         return null;
